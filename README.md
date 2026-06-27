@@ -4,6 +4,8 @@ Enterprise-grade React frontend boilerplate for an organic e-commerce platform s
 
 This is a **frontend-only** architecture with no backend, API client, or server integration.
 
+**Live Demo:** [https://organic-valley-three.vercel.app/](https://organic-valley-three.vercel.app/)
+
 ---
 
 ## Features
