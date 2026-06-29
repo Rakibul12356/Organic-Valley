@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Container } from '@components/common';
 import { ProductPagination } from '@components/products';
 import { ManageListingCard, ManageListingFilters } from '@components/manage-listings';
 import { ROUTES } from '@constants';
-import { FARMER_LISTINGS, LISTINGS_PER_PAGE } from '@data/farmerListings';
+import { getFarmerListings, LISTINGS_PER_PAGE } from '@data/farmerListings';
 
 const INITIAL_FILTERS = {
   search: '',
@@ -27,13 +27,15 @@ const filterListings = (listings, filters) => {
 };
 
 const ManageListingsPage = () => {
+  const location = useLocation();
+  const listings = useMemo(() => getFarmerListings(), [location.pathname]);
   const [draftFilters, setDraftFilters] = useState(INITIAL_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(INITIAL_APPLIED_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredListings = useMemo(
-    () => filterListings(FARMER_LISTINGS, appliedFilters),
-    [appliedFilters],
+    () => filterListings(listings, appliedFilters),
+    [listings, appliedFilters],
   );
 
   const totalPages = Math.max(1, Math.ceil(filteredListings.length / LISTINGS_PER_PAGE));
@@ -83,13 +85,13 @@ const ManageListingsPage = () => {
               Manage your product listings and inventory
             </p>
           </div>
-          <button
-            type="button"
+          <Link
+            to={ROUTES.ADD_PRODUCT}
             className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition"
           >
             <i className="fas fa-plus mr-2" aria-hidden="true" />
             Add New Product
-          </button>
+          </Link>
         </div>
 
         <ManageListingFilters

@@ -13,6 +13,7 @@ const NAV_LINKS = [
 ];
 
 const AUTH_PAGES = [ROUTES.LOGIN, ROUTES.REGISTER];
+const FARMER_PORTAL_PAGES = [ROUTES.MANAGE_LISTINGS, ROUTES.ADD_PRODUCT];
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -51,13 +52,15 @@ const NavbarLogo = ({ onClick }) => (
 const Navbar = () => {
   const { pathname } = useLocation();
   const isAuthPage = AUTH_PAGES.includes(pathname);
+  const isFarmerPortalPage = FARMER_PORTAL_PAGES.includes(pathname);
+  const isSimplifiedNav = isAuthPage || isFarmerPortalPage;
   const { isAuthenticated, user, logout, isFarmer } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const [searchQuery, setSearchQuery] = useState('');
   const cartCount = 3;
 
-  const navBreakpoint = isAuthPage ? 'md' : 'lg';
+  const navBreakpoint = isSimplifiedNav ? 'md' : 'lg';
   const desktopNavClass = navBreakpoint === 'md' ? 'hidden md:flex' : 'hidden lg:flex';
   const mobileToggleClass = navBreakpoint === 'md' ? 'md:hidden' : 'lg:hidden';
   const mobileMenuClass = navBreakpoint === 'md' ? 'md:hidden' : 'lg:hidden';
@@ -77,7 +80,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div
           className={`flex items-center justify-between gap-3 ${
-            isAuthPage ? 'h-16' : 'min-h-16 py-2 lg:py-0 lg:h-16'
+            isSimplifiedNav ? 'h-16' : 'min-h-16 py-2 lg:py-0 lg:h-16'
           }`}
         >
           <NavbarLogo onClick={closeMobileMenu} />
@@ -91,7 +94,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
-            {!isAuthPage && (
+            {!isSimplifiedNav && (
               <>
                 <div className="hidden lg:block relative">
                   <label htmlFor="navbar-search" className="sr-only">
@@ -137,6 +140,12 @@ const Navbar = () => {
                   </Link>
                 )}
               </>
+            )}
+
+            {isFarmerPortalPage && isAuthenticated && (
+              <div className="hidden sm:block">
+                <ProfileDropdown showNameFrom="sm" />
+              </div>
             )}
 
             <button
@@ -185,23 +194,25 @@ const Navbar = () => {
 
             {!isAuthPage && (
               <>
-                <div className="relative mt-4 px-1">
-                  <label htmlFor="navbar-search-mobile" className="sr-only">
-                    Search products
-                  </label>
-                  <input
-                    id="navbar-search-mobile"
-                    type="text"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Search products..."
-                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  />
-                  <i
-                    className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
-                    aria-hidden="true"
-                  />
-                </div>
+                {!isFarmerPortalPage && (
+                  <div className="relative mt-4 px-1">
+                    <label htmlFor="navbar-search-mobile" className="sr-only">
+                      Search products
+                    </label>
+                    <input
+                      id="navbar-search-mobile"
+                      type="text"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      placeholder="Search products..."
+                      className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                    <i
+                      className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
 
                 {isAuthenticated ? (
                   <div className="sm:hidden mt-4 px-1">
@@ -240,13 +251,15 @@ const Navbar = () => {
                     </button>
                   </div>
                 ) : (
-                  <Link
-                    to={ROUTES.LOGIN}
-                    className="sm:hidden flex items-center justify-center mt-4 mx-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition"
-                    onClick={closeMobileMenu}
-                  >
-                    Sign In
-                  </Link>
+                  !isFarmerPortalPage && (
+                    <Link
+                      to={ROUTES.LOGIN}
+                      className="sm:hidden flex items-center justify-center mt-4 mx-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition"
+                      onClick={closeMobileMenu}
+                    >
+                      Sign In
+                    </Link>
+                  )
                 )}
               </>
             )}

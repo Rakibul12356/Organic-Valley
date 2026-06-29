@@ -138,4 +138,12 @@ export const FARMER_LISTINGS = [
   },
 ];
 
+const dynamicListings = [];
+
+export const getFarmerListings = () => [...FARMER_LISTINGS, ...dynamicListings];
+
+export const addFarmerListing = (listing) => {
+  dynamicListings.unshift(listing);
+};
+
 export const LISTINGS_PER_PAGE = 6;

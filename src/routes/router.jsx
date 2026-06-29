@@ -9,7 +9,9 @@ import AboutPage from '@pages/About';
 import ProductDetailsPage from '@pages/ProductDetails';
 import LoginPage from '@pages/Login';
 import RegisterPage from '@pages/Register';
+import CartPage from '@pages/Cart';
 import ManageListingsPage from '@pages/ManageListings';
+import AddProductPage from '@pages/ManageListings/AddProduct';
 
 const layoutRoutes = [
   { index: true, element: <HomePage /> },
@@ -21,11 +23,14 @@ const layoutRoutes = [
   { path: 'register', element: <RegisterPage /> },
   {
     element: <FarmerRoute />,
-    children: [{ path: 'manage-listings', element: <ManageListingsPage /> }],
+    children: [
+      { path: 'manage-listings', element: <ManageListingsPage /> },
+      { path: 'manage-listings/add', element: <AddProductPage /> },
+    ],
   },
   { path: 'categories', element: null },
   { path: 'contact', element: null },
-  { path: 'cart', element: null },
+  { path: 'cart', element: <CartPage /> },
   { path: 'profile', element: null },
 ];
 

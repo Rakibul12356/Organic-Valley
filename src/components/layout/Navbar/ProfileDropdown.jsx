@@ -9,11 +9,13 @@ const ROLE_LABELS = {
   [USER_ROLES.FARMER]: 'Farmer',
 };
 
-const ProfileDropdown = ({ onNavigate }) => {
+const ProfileDropdown = ({ onNavigate, showNameFrom = 'xl' }) => {
   const { user, logout, isFarmer } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
   const navigate = useNavigate();
+
+  const nameVisibilityClass = showNameFrom === 'sm' ? 'hidden sm:inline' : 'hidden xl:inline';
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -49,9 +51,9 @@ const ProfileDropdown = ({ onNavigate }) => {
         aria-haspopup="menu"
       >
         <img src={user.avatar} alt="" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
-        <span className="hidden xl:inline text-sm max-w-[120px] truncate">{user.name}</span>
+        <span className={`${nameVisibilityClass} text-sm max-w-[120px] truncate`}>{user.name}</span>
         <i
-          className={`fas fa-chevron-down text-xs hidden xl:inline transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`fas fa-chevron-down text-xs ${nameVisibilityClass} transition-transform ${isOpen ? 'rotate-180' : ''}`}
           aria-hidden="true"
         />
       </button>
