@@ -10,6 +10,7 @@ import ProductDetailsPage from '@pages/ProductDetails';
 import LoginPage from '@pages/Login';
 import RegisterPage from '@pages/Register';
 import CartPage from '@pages/Cart';
+import OrdersPage from '@pages/Orders';
 import ManageListingsPage from '@pages/ManageListings';
 import AddProductPage from '@pages/ManageListings/AddProduct';
 
@@ -31,6 +32,7 @@ const layoutRoutes = [
   { path: 'categories', element: null },
   { path: 'contact', element: null },
   { path: 'cart', element: <CartPage /> },
+  { path: 'orders', element: <OrdersPage /> },
   { path: 'profile', element: null },
 ];
 
