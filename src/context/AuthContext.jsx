@@ -1,126 +1,123 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '@api';
-import { STORAGE_KEYS, USER_ROLES } from '@constants/storage';
+import { queryKeys } from '@constants/queryKeys';
+import { USER_ROLES } from '@constants/storage';
+import {
+  clearAuth,
+  getAuthToken,
+  persistAuth,
+  readStoredUser,
+} from '@utils/authStorage';
 
 export const AuthContext = createContext(null);
 
-const readStoredUser = () => {
-  const raw = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-};
-
-const persistAuth = (token, user) => {
-  localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-  localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
-};
-
-const clearAuth = () => {
-  localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
-};
-
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(readStoredUser);
-  const [token, setToken] = useState(() => localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN));
-  const [isLoading, setIsLoading] = useState(Boolean(localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)));
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
+  const [token, setToken] = useState(getAuthToken);
+
+  /** Re-authentication: token থাকলে GET /auth/me দিয়ে সেশন যাচাই */
+  const currentUserQuery = useQuery({
+    queryKey: queryKeys.auth.me,
+    queryFn: async () => {
+      const { data } = await authApi.getMe();
+      const storedToken = getAuthToken();
+      if (storedToken) {
+        persistAuth(storedToken, data.user);
+      }
+      return data.user;
+    },
+    enabled: Boolean(token),
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+    placeholderData: () => readStoredUser() ?? undefined,
+  });
 
   useEffect(() => {
-    const verifySession = async () => {
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const { data } = await authApi.getMe();
-        setUser(data.user);
-        localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(data.user));
-      } catch {
-        clearAuth();
-        setUser(null);
-        setToken(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    verifySession();
-  }, [token]);
-
-  const login = useCallback(async ({ email, password, role }) => {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const { data } = await authApi.login({ email, password, role });
-      persistAuth(data.token, data.user);
-      setToken(data.token);
-      setUser(data.user);
-      return data.user;
-    } catch (err) {
-      const message =
-        err.response?.data?.message || 'Login failed. Please check your credentials.';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const register = useCallback(async (payload) => {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const { data } = await authApi.register(payload);
-      persistAuth(data.token, data.user);
-      setToken(data.token);
-      setUser(data.user);
-      return data.user;
-    } catch (err) {
-      const message = err.response?.data?.message || 'Registration failed. Please try again.';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const logout = useCallback(async () => {
-    try {
-      await authApi.logout();
-    } catch {
-      // ignore mock logout errors
-    } finally {
+    if (currentUserQuery.isError) {
       clearAuth();
-      setUser(null);
       setToken(null);
-      setError(null);
+      queryClient.removeQueries({ queryKey: queryKeys.auth.me });
     }
-  }, []);
+  }, [currentUserQuery.isError, queryClient]);
+
+  const loginMutation = useMutation({
+    mutationFn: async (credentials) => {
+      const { data } = await authApi.login(credentials);
+      return data;
+    },
+    onSuccess: (data) => {
+      persistAuth(data.token, data.user);
+      setToken(data.token);
+      queryClient.setQueryData(queryKeys.auth.me, data.user);
+    },
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: async (payload) => {
+      const { data } = await authApi.register(payload);
+      return data;
+    },
+    onSuccess: (data) => {
+      persistAuth(data.token, data.user);
+      setToken(data.token);
+      queryClient.setQueryData(queryKeys.auth.me, data.user);
+    },
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: () => authApi.logout(),
+    onSettled: () => {
+      clearAuth();
+      setToken(null);
+      queryClient.removeQueries({ queryKey: queryKeys.auth.me });
+    },
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (payload) => {
+      const { data } = await authApi.updateProfile(payload);
+      return data.user;
+    },
+    onSuccess: (user) => {
+      const storedToken = getAuthToken();
+      if (storedToken) {
+        persistAuth(storedToken, user);
+      }
+      queryClient.setQueryData(queryKeys.auth.me, user);
+    },
+  });
+
+  const user = currentUserQuery.data ?? null;
+  const isInitializing = Boolean(token) && currentUserQuery.isLoading;
 
   const value = useMemo(
     () => ({
       user,
       token,
-      error,
-      isLoading,
+      isLoading: isInitializing,
       isAuthenticated: Boolean(user && token),
       isCustomer: user?.role === USER_ROLES.CUSTOMER,
       isFarmer: user?.role === USER_ROLES.FARMER,
-      login,
-      register,
-      logout,
-      clearError: () => setError(null),
+      isAdmin: user?.role === USER_ROLES.ADMIN,
+      loginMutation,
+      registerMutation,
+      logoutMutation,
+      updateProfileMutation,
+      login: (credentials) => loginMutation.mutateAsync(credentials).then((data) => data.user),
+      register: (payload) => registerMutation.mutateAsync(payload).then((data) => data.user),
+      logout: () => logoutMutation.mutateAsync(),
+      updateProfile: (payload) => updateProfileMutation.mutateAsync(payload),
     }),
-    [user, token, error, isLoading, login, register, logout],
+    [
+      user,
+      token,
+      isInitializing,
+      loginMutation,
+      registerMutation,
+      logoutMutation,
+      updateProfileMutation,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

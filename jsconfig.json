@@ -12,6 +12,8 @@
       "@data/*": ["src/data/*"],
       "@features/*": ["src/features/*"],
       "@hooks/*": ["src/hooks/*"],
+      "@lib": ["src/lib"],
+      "@lib/*": ["src/lib/*"],
       "@layouts/*": ["src/layouts/*"],
       "@pages/*": ["src/pages/*"],
       "@providers/*": ["src/providers/*"],

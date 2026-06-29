@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { MainLayout } from '@layouts';
-import { FarmerRoute } from '@components/routing';
+import { DashboardLayout, MainLayout } from '@layouts';
+import { AdminRoute, FarmerRoute, ProtectedRoute } from '@components/routing';
 import { ROUTES } from '@constants';
 import HomePage from '@pages/Home';
 import ProductsPage from '@pages/Products';
@@ -11,8 +11,14 @@ import LoginPage from '@pages/Login';
 import RegisterPage from '@pages/Register';
 import CartPage from '@pages/Cart';
 import OrdersPage from '@pages/Orders';
+import ProfilePage from '@pages/Profile';
 import ManageListingsPage from '@pages/ManageListings';
 import AddProductPage from '@pages/ManageListings/AddProduct';
+import DashboardPage, {
+  AdminProductsPage,
+  AdminOrdersPage,
+  AdminUsersPage,
+} from '@pages/Dashboard';
 
 const layoutRoutes = [
   { index: true, element: <HomePage /> },
@@ -33,7 +39,10 @@ const layoutRoutes = [
   { path: 'contact', element: null },
   { path: 'cart', element: <CartPage /> },
   { path: 'orders', element: <OrdersPage /> },
-  { path: 'profile', element: null },
+  {
+    element: <ProtectedRoute />,
+    children: [{ path: 'profile', element: <ProfilePage /> }],
+  },
 ];
 
 export const router = createBrowserRouter([
@@ -41,6 +50,21 @@ export const router = createBrowserRouter([
     path: ROUTES.HOME,
     element: <MainLayout />,
     children: layoutRoutes,
+  },
+  {
+    path: ROUTES.DASHBOARD,
+    element: <DashboardLayout />,
+    children: [
+      {
+        element: <AdminRoute />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: 'products', element: <AdminProductsPage /> },
+          { path: 'orders', element: <AdminOrdersPage /> },
+          { path: 'users', element: <AdminUsersPage /> },
+        ],
+      },
+    ],
   },
 ]);
 

@@ -2,6 +2,7 @@ import { useLocation, Navigate, Outlet } from 'react-router-dom';
 import { ROUTES } from '@constants';
 import { useAuth } from '@hooks/useAuth';
 
+/** Farmer-only route — authenticate + role === farmer */
 const FarmerRoute = () => {
   const { isAuthenticated, isFarmer, isLoading } = useAuth();
   const location = useLocation();
