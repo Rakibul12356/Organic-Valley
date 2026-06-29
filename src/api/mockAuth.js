@@ -3,6 +3,7 @@ import { DUMMY_USERS } from '@data/auth';
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const registeredUsers = [];
+const profileUpdates = {};
 
 const createAxiosResponse = (config, data, status = 200) => ({
   data,
@@ -14,6 +15,11 @@ const createAxiosResponse = (config, data, status = 200) => ({
 });
 
 const sanitizeUser = ({ password: _password, ...safeUser }) => safeUser;
+
+const mergeUserProfile = (user) => {
+  if (!user) return null;
+  return sanitizeUser({ ...user, ...profileUpdates[user.id] });
+};
 
 export const getAllUsers = () => [...DUMMY_USERS, ...registeredUsers];
 
@@ -50,7 +56,7 @@ export const resolveMockResponse = async (config) => {
 
     return createAxiosResponse(config, {
       token: `ov-dummy-token-${user.id}`,
-      user: sanitizeUser(user),
+      user: mergeUserProfile(user),
     });
   }
 
@@ -93,7 +99,7 @@ export const resolveMockResponse = async (config) => {
 
     return createAxiosResponse(config, {
       token: `ov-dummy-token-${newUser.id}`,
-      user: sanitizeUser(newUser),
+      user: mergeUserProfile(newUser),
     });
   }
 
@@ -112,7 +118,39 @@ export const resolveMockResponse = async (config) => {
       return createAxiosResponse(config, { message: 'Unauthorized' }, 401);
     }
 
-    return createAxiosResponse(config, { user: sanitizeUser(user) });
+    return createAxiosResponse(config, { user: mergeUserProfile(user) });
+  }
+
+  if (method === 'patch' && url.endsWith('/auth/profile')) {
+    await delay(500);
+    const authHeader = config.headers?.Authorization || '';
+    const token = authHeader.replace('Bearer ', '');
+    const user = findUserByToken(token);
+
+    if (!user) {
+      return createAxiosResponse(config, { message: 'Unauthorized' }, 401);
+    }
+
+    const payload = JSON.parse(config.data || '{}');
+    const allowedFields = [
+      'name',
+      'phone',
+      'address',
+      'bio',
+      'avatar',
+      'farmName',
+      'specialization',
+      'farmSize',
+      'farmSizeUnit',
+    ];
+
+    const updates = Object.fromEntries(
+      Object.entries(payload).filter(([key, value]) => allowedFields.includes(key) && value !== undefined),
+    );
+
+    profileUpdates[user.id] = { ...profileUpdates[user.id], ...updates };
+
+    return createAxiosResponse(config, { user: mergeUserProfile(user) });
   }
 
   return null;

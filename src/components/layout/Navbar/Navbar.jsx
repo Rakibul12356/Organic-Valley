@@ -13,7 +13,9 @@ const NAV_LINKS = [
 ];
 
 const AUTH_PAGES = [ROUTES.LOGIN, ROUTES.REGISTER];
-const FARMER_PORTAL_PAGES = [ROUTES.MANAGE_LISTINGS, ROUTES.ADD_PRODUCT];
+const FARMER_PORTAL_PAGES = [ROUTES.MANAGE_LISTINGS, ROUTES.ADD_PRODUCT, ROUTES.PROFILE];
+const CUSTOMER_PORTAL_PAGES = [ROUTES.ORDERS, ROUTES.PROFILE];
+const PORTAL_PAGES_WITH_PROFILE = [...FARMER_PORTAL_PAGES, ...CUSTOMER_PORTAL_PAGES];
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -52,8 +54,8 @@ const NavbarLogo = ({ onClick }) => (
 const Navbar = () => {
   const { pathname } = useLocation();
   const isAuthPage = AUTH_PAGES.includes(pathname);
-  const isFarmerPortalPage = FARMER_PORTAL_PAGES.includes(pathname);
-  const isSimplifiedNav = isAuthPage || isFarmerPortalPage;
+  const isPortalPage = PORTAL_PAGES_WITH_PROFILE.includes(pathname);
+  const isSimplifiedNav = isAuthPage || isPortalPage;
   const { isAuthenticated, user, logout, isFarmer } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
@@ -142,9 +144,9 @@ const Navbar = () => {
               </>
             )}
 
-            {isFarmerPortalPage && isAuthenticated && (
+            {isPortalPage && isAuthenticated && (
               <div className="hidden sm:block">
-                <ProfileDropdown showNameFrom="sm" />
+                <ProfileDropdown showNameFrom="sm" onNavigate={closeMobileMenu} />
               </div>
             )}
 
@@ -194,7 +196,7 @@ const Navbar = () => {
 
             {!isAuthPage && (
               <>
-                {!isFarmerPortalPage && (
+                {!isPortalPage && (
                   <div className="relative mt-4 px-1">
                     <label htmlFor="navbar-search-mobile" className="sr-only">
                       Search products
@@ -230,13 +232,21 @@ const Navbar = () => {
                     >
                       My Profile
                     </Link>
-                    {isFarmer && (
+                    {isFarmer ? (
                       <Link
                         to={ROUTES.MANAGE_LISTINGS}
                         className="block px-3 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg"
                         onClick={closeMobileMenu}
                       >
                         Manage Listing
+                      </Link>
+                    ) : (
+                      <Link
+                        to={ROUTES.ORDERS}
+                        className="block px-3 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg"
+                        onClick={closeMobileMenu}
+                      >
+                        My Orders
                       </Link>
                     )}
                     <button
@@ -251,7 +261,7 @@ const Navbar = () => {
                     </button>
                   </div>
                 ) : (
-                  !isFarmerPortalPage && (
+                  !isPortalPage && (
                     <Link
                       to={ROUTES.LOGIN}
                       className="sm:hidden flex items-center justify-center mt-4 mx-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition"
