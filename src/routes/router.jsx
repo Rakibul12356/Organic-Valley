@@ -2,10 +2,11 @@ import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from '@layouts';
 import { ROUTES } from '@constants';
 import HomePage from '@pages/Home';
+import ProductsPage from '@pages/Products';
 
 const layoutRoutes = [
   { index: true, element: <HomePage /> },
-  { path: 'products', element: null },
+  { path: 'products', element: <ProductsPage /> },
   { path: 'categories', element: null },
   { path: 'contact', element: null },
   { path: 'cart', element: null },

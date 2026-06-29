@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@constants';
-import { FEATURED_PRODUCTS } from '../data';
-import ProductCard from '../ProductCard';
+import { FEATURED_PRODUCTS } from '@data/products';
+import { ProductCard } from '@components/products';
 
 const FeaturedProducts = () => {
   return (
