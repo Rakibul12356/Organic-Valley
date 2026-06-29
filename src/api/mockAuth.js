@@ -2,6 +2,8 @@ import { DUMMY_USERS } from '@data/auth';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const registeredUsers = [];
+
 const createAxiosResponse = (config, data, status = 200) => ({
   data,
   status,
@@ -13,13 +15,21 @@ const createAxiosResponse = (config, data, status = 200) => ({
 
 const sanitizeUser = ({ password: _password, ...safeUser }) => safeUser;
 
-const findUser = (email, password, role) =>
-  DUMMY_USERS.find(
+export const getAllUsers = () => [...DUMMY_USERS, ...registeredUsers];
+
+const findUserByCredentials = (email, password, role) =>
+  getAllUsers().find(
     (user) =>
       user.email.toLowerCase() === email.toLowerCase() &&
       user.password === password &&
       user.role === role,
   );
+
+const findUserByToken = (token) =>
+  getAllUsers().find((user) => `ov-dummy-token-${user.id}` === token);
+
+const findUserByEmail = (email) =>
+  getAllUsers().find((user) => user.email.toLowerCase() === email.toLowerCase());
 
 export const resolveMockResponse = async (config) => {
   const url = config.url || '';
@@ -28,7 +38,7 @@ export const resolveMockResponse = async (config) => {
   if (method === 'post' && url.endsWith('/auth/login')) {
     await delay(600);
     const { email, password, role } = JSON.parse(config.data || '{}');
-    const user = findUser(email, password, role);
+    const user = findUserByCredentials(email, password, role);
 
     if (!user) {
       return createAxiosResponse(
@@ -44,6 +54,49 @@ export const resolveMockResponse = async (config) => {
     });
   }
 
+  if (method === 'post' && url.endsWith('/auth/register')) {
+    await delay(800);
+    const payload = JSON.parse(config.data || '{}');
+    const { email, password, confirmPassword, role } = payload;
+
+    if (password !== confirmPassword) {
+      return createAxiosResponse(config, { message: 'Passwords do not match.' }, 400);
+    }
+
+    if (findUserByEmail(email)) {
+      return createAxiosResponse(config, { message: 'An account with this email already exists.' }, 409);
+    }
+
+    if (role === 'farmer' && !payload.farmName?.trim()) {
+      return createAxiosResponse(config, { message: 'Farm name is required for farmers.' }, 400);
+    }
+
+    const newUser = {
+      id: `user-${role}-${Date.now()}`,
+      name: `${payload.firstName} ${payload.lastName}`.trim(),
+      email: payload.email,
+      password: payload.password,
+      role,
+      avatar: payload.avatar || DUMMY_USERS[0].avatar,
+      phone: payload.phone,
+      address: payload.address,
+      bio: payload.bio || '',
+      ...(role === 'farmer' && {
+        farmName: payload.farmName,
+        specialization: payload.specialization,
+        farmSize: payload.farmSize,
+        farmSizeUnit: payload.farmSizeUnit,
+      }),
+    };
+
+    registeredUsers.push(newUser);
+
+    return createAxiosResponse(config, {
+      token: `ov-dummy-token-${newUser.id}`,
+      user: sanitizeUser(newUser),
+    });
+  }
+
   if (method === 'post' && url.endsWith('/auth/logout')) {
     await delay(300);
     return createAxiosResponse(config, { success: true });
@@ -53,7 +106,7 @@ export const resolveMockResponse = async (config) => {
     await delay(300);
     const authHeader = config.headers?.Authorization || '';
     const token = authHeader.replace('Bearer ', '');
-    const user = DUMMY_USERS.find((item) => `ov-dummy-token-${item.id}` === token);
+    const user = findUserByToken(token);
 
     if (!user) {
       return createAxiosResponse(config, { message: 'Unauthorized' }, 401);

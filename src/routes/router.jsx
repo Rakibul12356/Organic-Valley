@@ -7,6 +7,7 @@ import FarmersPage from '@pages/Farmers';
 import AboutPage from '@pages/About';
 import ProductDetailsPage from '@pages/ProductDetails';
 import LoginPage from '@pages/Login';
+import RegisterPage from '@pages/Register';
 
 const layoutRoutes = [
   { index: true, element: <HomePage /> },
@@ -15,6 +16,7 @@ const layoutRoutes = [
   { path: 'farmers', element: <FarmersPage /> },
   { path: 'about', element: <AboutPage /> },
   { path: 'login', element: <LoginPage /> },
+  { path: 'register', element: <RegisterPage /> },
   { path: 'categories', element: null },
   { path: 'contact', element: null },
   { path: 'cart', element: null },

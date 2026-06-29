@@ -74,6 +74,25 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const register = useCallback(async (payload) => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const { data } = await authApi.register(payload);
+      persistAuth(data.token, data.user);
+      setToken(data.token);
+      setUser(data.user);
+      return data.user;
+    } catch (err) {
+      const message = err.response?.data?.message || 'Registration failed. Please try again.';
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -97,10 +116,11 @@ export const AuthProvider = ({ children }) => {
       isCustomer: user?.role === USER_ROLES.CUSTOMER,
       isFarmer: user?.role === USER_ROLES.FARMER,
       login,
+      register,
       logout,
       clearError: () => setError(null),
     }),
-    [user, token, error, isLoading, login, logout],
+    [user, token, error, isLoading, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
