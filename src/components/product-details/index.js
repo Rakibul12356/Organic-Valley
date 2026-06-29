@@ -1,0 +1,6 @@
+export { default as ProductBreadcrumb } from './ProductBreadcrumb';
+export { default as ProductGallery } from './ProductGallery';
+export { default as ProductInfo } from './ProductInfo';
+export { default as ProductTabs } from './ProductTabs';
+export { default as ProductReviews } from './ProductReviews';
+export { default as RelatedProducts } from './RelatedProducts';

@@ -3,10 +3,16 @@ import { MainLayout } from '@layouts';
 import { ROUTES } from '@constants';
 import HomePage from '@pages/Home';
 import ProductsPage from '@pages/Products';
+import FarmersPage from '@pages/Farmers';
+import AboutPage from '@pages/About';
+import ProductDetailsPage from '@pages/ProductDetails';
 
 const layoutRoutes = [
   { index: true, element: <HomePage /> },
   { path: 'products', element: <ProductsPage /> },
+  { path: 'products/:productId', element: <ProductDetailsPage /> },
+  { path: 'farmers', element: <FarmersPage /> },
+  { path: 'about', element: <AboutPage /> },
   { path: 'categories', element: null },
   { path: 'contact', element: null },
   { path: 'cart', element: null },

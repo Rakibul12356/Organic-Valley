@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Container } from '@components/common';
 import { PRODUCT_CATEGORY_LABELS } from '@constants';
 
 const HERO_STATS = [
@@ -27,7 +26,7 @@ const Hero = () => {
   return (
     <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white">
       <div className="absolute inset-0 bg-black opacity-20" aria-hidden="true" />
-      <Container className="relative py-24">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">Fresh from Farm to Your Table</h1>
           <p className="text-xl md:text-2xl mb-8 text-green-100 max-w-3xl mx-auto">
@@ -82,7 +81,7 @@ const Hero = () => {
             ))}
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 };

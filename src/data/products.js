@@ -1,3 +1,5 @@
+import { PRODUCT_DETAILS_EXTRA, buildDefaultProductDetails } from './productDetails';
+
 export const PRODUCTS_LIST = [
   {
     id: 'tomatoes',
@@ -98,7 +100,23 @@ export const FEATURED_PRODUCTS = [
 ].map((product, index) => ({
   ...product,
   id: `${product.id}-featured-${index}`,
+  slug: product.id,
 }));
+
+export const getProductDetailsPath = (slug) => `/products/${slug}`;
+
+export const getProductBySlug = (slug) => PRODUCTS_LIST.find((product) => product.id === slug);
+
+export const getRelatedProducts = (slug, limit = 4) =>
+  PRODUCTS_LIST.filter((product) => product.id !== slug).slice(0, limit);
+
+export const getProductDetails = (slug) => {
+  const base = getProductBySlug(slug);
+  if (!base) return null;
+
+  const extra = PRODUCT_DETAILS_EXTRA[slug] || buildDefaultProductDetails(base);
+  return { ...base, slug: base.id, ...extra };
+};
 
 export const FILTER_CATEGORIES = [
   { id: 'vegetables', label: 'Vegetables', count: 45 },

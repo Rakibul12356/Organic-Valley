@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Container } from '@components/common';
 import { ROUTES } from '@constants';
 import { STORAGE_KEYS } from '@constants/storage';
 
 const NAV_LINKS = [
   { label: 'Home', to: ROUTES.HOME },
   { label: 'Products', to: ROUTES.PRODUCTS },
-  { label: 'Farmers', to: ROUTES.CATEGORIES },
-  { label: 'About', to: ROUTES.CONTACT },
+  { label: 'Farmers', to: ROUTES.FARMERS },
+  { label: 'About', to: ROUTES.ABOUT },
 ];
 
 const navLinkClass = ({ isActive }) =>
@@ -42,7 +41,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
-      <Container>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to={ROUTES.HOME} className="flex items-center space-x-3" onClick={closeMobileMenu}>
             <div className="bg-primary-500 p-2 rounded-lg">
@@ -75,10 +74,7 @@ const Navbar = () => {
                 placeholder="Search products..."
                 className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               />
-              <i
-                className="fas fa-search absolute left-3 top-3 text-gray-400"
-                aria-hidden="true"
-              />
+              <i className="fas fa-search absolute left-3 top-3 text-gray-400" aria-hidden="true" />
             </div>
 
             <Link
@@ -115,8 +111,7 @@ const Navbar = () => {
               className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
               aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              <i className="fas fa-moon dark:hidden" aria-hidden="true" />
-              <i className="fas fa-sun hidden dark:block" aria-hidden="true" />
+              <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`} aria-hidden="true" />
             </button>
 
             <button
@@ -126,7 +121,10 @@ const Navbar = () => {
               aria-label="Toggle mobile menu"
               aria-expanded={isMobileMenuOpen}
             >
-              <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`} aria-hidden="true" />
+              <i
+                className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}
+                aria-hidden="true"
+              />
             </button>
           </div>
         </div>
@@ -137,9 +135,7 @@ const Navbar = () => {
               <NavLink
                 key={link.to}
                 to={link.to}
-                className={({ isActive }) =>
-                  `block px-2 py-1 ${navLinkClass({ isActive })}`
-                }
+                className={({ isActive }) => `block px-2 py-1 ${navLinkClass({ isActive })}`}
                 onClick={closeMobileMenu}
               >
                 {link.label}
@@ -158,14 +154,11 @@ const Navbar = () => {
                 placeholder="Search products..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               />
-              <i
-                className="fas fa-search absolute left-3 top-3 text-gray-400"
-                aria-hidden="true"
-              />
+              <i className="fas fa-search absolute left-3 top-3 text-gray-400" aria-hidden="true" />
             </div>
           </div>
         )}
-      </Container>
+      </div>
     </nav>
   );
 };

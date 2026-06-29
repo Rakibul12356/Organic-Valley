@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Container } from '@components/common';
 import {
   PRODUCTS_LIST,
   PRICE_RANGES,
@@ -94,7 +93,7 @@ const ProductsPage = () => {
     <>
       <ProductsPageHeader />
 
-      <Container className="py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
             <ProductFilters
@@ -140,7 +139,7 @@ const ProductsPage = () => {
             />
           </div>
         </div>
-      </Container>
+      </div>
     </>
   );
 };

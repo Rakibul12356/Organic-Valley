@@ -1,13 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Container } from '@components/common';
 import { ROUTES } from '@constants';
 import { appConfig } from '@config/env';
 
 const QUICK_LINKS = [
   { label: 'Home', to: ROUTES.HOME },
   { label: 'Products', to: ROUTES.PRODUCTS },
-  { label: 'Farmers', to: ROUTES.CATEGORIES },
-  { label: 'About Us', to: ROUTES.CONTACT },
+  { label: 'Farmers', to: ROUTES.FARMERS },
+  { label: 'About Us', to: ROUTES.ABOUT },
 ];
 
 const FARMER_LINKS = [
@@ -50,7 +49,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gray-900 text-white">
-      <Container className="py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <Link to={ROUTES.HOME} className="flex items-center space-x-3 mb-4">
@@ -89,7 +88,7 @@ const Footer = () => {
             &copy; {currentYear} {appConfig.name}. All rights reserved.
           </p>
         </div>
-      </Container>
+      </div>
     </footer>
   );
 };

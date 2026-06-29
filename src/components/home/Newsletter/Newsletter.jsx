@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Container } from '@components/common';
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +10,7 @@ const Newsletter = () => {
 
   return (
     <section className="py-16 bg-primary-600">
-      <Container className="text-center">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl font-bold text-white mb-4">Stay Updated</h2>
         <p className="text-primary-100 mb-8">
           Get notified about new farmers, seasonal produce, and special offers
@@ -40,7 +39,7 @@ const Newsletter = () => {
             Subscribe
           </button>
         </form>
-      </Container>
+      </div>
     </section>
   );
 };
