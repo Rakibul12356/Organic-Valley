@@ -18,19 +18,19 @@ const DEMO_CREDENTIALS = {
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
+  const { login, isLoading, error, clearError, isAuthenticated, isFarmer } = useAuth();
   const [role, setRole] = useState(USER_ROLES.CUSTOMER);
   const [email, setEmail] = useState(DEMO_CREDENTIALS[USER_ROLES.CUSTOMER].email);
   const [password, setPassword] = useState(DEMO_CREDENTIALS[USER_ROLES.CUSTOMER].password);
   const [formError, setFormError] = useState('');
 
-  const from = location.state?.from?.pathname || ROUTES.HOME;
+  const from = location.state?.from?.pathname;
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(from, { replace: true });
+      navigate(from || (isFarmer ? ROUTES.MANAGE_LISTINGS : ROUTES.HOME), { replace: true });
     }
-  }, [isAuthenticated, from, navigate]);
+  }, [isAuthenticated, isFarmer, from, navigate]);
 
   const handleRoleChange = (nextRole) => {
     setRole(nextRole);
@@ -46,8 +46,12 @@ const LoginPage = () => {
     setFormError('');
 
     try {
-      await login({ email, password, role });
-      navigate(from, { replace: true });
+      const user = await login({ email, password, role });
+      const redirectTo =
+        user.role === USER_ROLES.FARMER
+          ? from || ROUTES.MANAGE_LISTINGS
+          : from || ROUTES.HOME;
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setFormError(err.message);
     }

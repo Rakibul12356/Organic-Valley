@@ -14,6 +14,7 @@ export const ROUTES = {
   ORDERS: '/orders',
   ORDER_DETAILS: '/orders/:orderId',
   PROFILE: '/profile',
+  MANAGE_LISTINGS: '/manage-listings',
   DASHBOARD: '/dashboard',
   SEARCH: '/search',
   ABOUT: '/about',
@@ -54,6 +55,7 @@ export const PROTECTED_ROUTES = [
   ROUTES.ORDERS,
   ROUTES.ORDER_DETAILS,
   ROUTES.PROFILE,
+  ROUTES.MANAGE_LISTINGS,
 ];
 
 export const ADMIN_ONLY_ROUTES = [ROUTES.DASHBOARD, ...Object.values(ADMIN_ROUTES)];

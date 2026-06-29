@@ -81,13 +81,13 @@ const ProfileDropdown = ({ onNavigate }) => {
 
           {isFarmer ? (
             <Link
-              to={ROUTES.DASHBOARD}
+              to={ROUTES.MANAGE_LISTINGS}
               className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               onClick={closeMenu}
               role="menuitem"
             >
-              <i className="fas fa-tractor w-4" aria-hidden="true" />
-              Farm Dashboard
+              <i className="fas fa-list w-4" aria-hidden="true" />
+              Manage Listing
             </Link>
           ) : (
             <Link

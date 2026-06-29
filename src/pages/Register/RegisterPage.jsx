@@ -86,7 +86,7 @@ const RegisterPage = () => {
     }
 
     try {
-      await register({
+      const newUser = await register({
         role: userType,
         firstName,
         lastName,
@@ -102,7 +102,10 @@ const RegisterPage = () => {
         farmSize: isFarmer ? farmSize : undefined,
         farmSizeUnit: isFarmer ? farmSizeUnit : undefined,
       });
-      navigate(ROUTES.HOME, { replace: true });
+      navigate(
+        newUser.role === USER_ROLES.FARMER ? ROUTES.MANAGE_LISTINGS : ROUTES.HOME,
+        { replace: true },
+      );
     } catch (err) {
       setFormError(err.message);
     }

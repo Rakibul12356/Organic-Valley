@@ -51,7 +51,7 @@ const NavbarLogo = ({ onClick }) => (
 const Navbar = () => {
   const { pathname } = useLocation();
   const isAuthPage = AUTH_PAGES.includes(pathname);
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isFarmer } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const [searchQuery, setSearchQuery] = useState('');
@@ -219,6 +219,15 @@ const Navbar = () => {
                     >
                       My Profile
                     </Link>
+                    {isFarmer && (
+                      <Link
+                        to={ROUTES.MANAGE_LISTINGS}
+                        className="block px-3 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg"
+                        onClick={closeMobileMenu}
+                      >
+                        Manage Listing
+                      </Link>
+                    )}
                     <button
                       type="button"
                       onClick={async () => {
