@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { ROUTES } from '@constants';
 import { STORAGE_KEYS } from '@constants/storage';
+import { useAuth } from '@hooks/useAuth';
+import ProfileDropdown from './ProfileDropdown';
 
 const NAV_LINKS = [
   { label: 'Home', to: ROUTES.HOME },
@@ -25,6 +27,7 @@ const getInitialDarkMode = () => {
 };
 
 const Navbar = () => {
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,19 +110,18 @@ const Navbar = () => {
               )}
             </Link>
 
-            <Link
-              to={ROUTES.PROFILE}
-              className="hidden sm:flex items-center gap-2 p-1 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-              aria-label="User profile"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-                alt=""
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full"
-              />
-              <span className="hidden xl:inline text-sm">John Doe</span>
-              <i className="fas fa-chevron-down text-xs hidden xl:inline" aria-hidden="true" />
-            </Link>
+            {isAuthenticated ? (
+              <div className="hidden sm:block">
+                <ProfileDropdown />
+              </div>
+            ) : (
+              <Link
+                to={ROUTES.LOGIN}
+                className="hidden sm:inline-flex items-center px-3 lg:px-4 py-1.5 lg:py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition"
+              >
+                Sign In
+              </Link>
+            )}
 
             <button
               type="button"
@@ -181,18 +183,46 @@ const Navbar = () => {
               />
             </div>
 
-            <Link
-              to={ROUTES.PROFILE}
-              className="sm:hidden flex items-center gap-3 mt-4 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-              onClick={closeMobileMenu}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-                alt=""
-                className="w-8 h-8 rounded-full"
-              />
-              <span className="font-medium">John Doe</span>
-            </Link>
+            {isAuthenticated ? (
+              <div className="sm:hidden mt-4 px-1">
+                <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                  <img
+                    src={user.avatar}
+                    alt=""
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{user.role}</p>
+                  </div>
+                </div>
+                <Link
+                  to={ROUTES.PROFILE}
+                  className="block px-3 py-2.5 mt-1 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg"
+                  onClick={closeMobileMenu}
+                >
+                  My Profile
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await logout();
+                    closeMobileMenu();
+                  }}
+                  className="w-full text-left px-3 py-2.5 mt-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to={ROUTES.LOGIN}
+                className="sm:hidden flex items-center justify-center mt-4 mx-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition"
+                onClick={closeMobileMenu}
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         )}
       </div>

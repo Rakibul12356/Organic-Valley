@@ -6,6 +6,7 @@ import ProductsPage from '@pages/Products';
 import FarmersPage from '@pages/Farmers';
 import AboutPage from '@pages/About';
 import ProductDetailsPage from '@pages/ProductDetails';
+import LoginPage from '@pages/Login';
 
 const layoutRoutes = [
   { index: true, element: <HomePage /> },
@@ -13,6 +14,7 @@ const layoutRoutes = [
   { path: 'products/:productId', element: <ProductDetailsPage /> },
   { path: 'farmers', element: <FarmersPage /> },
   { path: 'about', element: <AboutPage /> },
+  { path: 'login', element: <LoginPage /> },
   { path: 'categories', element: null },
   { path: 'contact', element: null },
   { path: 'cart', element: null },
