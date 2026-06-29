@@ -8,7 +8,8 @@ import {
   FARM_SIZE_UNITS,
   DEFAULT_AVATAR_PREVIEW,
 } from '@data/register';
-import { useAuth } from '@hooks/useAuth';
+import { useCurrentUserQuery, useRegisterMutation } from '@hooks/auth';
+import { getAuthErrorMessage } from '@utils/getAuthErrorMessage';
 
 const INPUT_CLASS =
   'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white';
@@ -17,7 +18,8 @@ const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register, isLoading, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useCurrentUserQuery();
+  const registerMutation = useRegisterMutation();
 
   const [userType, setUserType] = useState(USER_ROLES.CUSTOMER);
   const [profilePreview, setProfilePreview] = useState(DEFAULT_AVATAR_PREVIEW);
@@ -86,7 +88,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const newUser = await register({
+      const data = await registerMutation.mutateAsync({
         role: userType,
         firstName,
         lastName,
@@ -96,6 +98,7 @@ const RegisterPage = () => {
         bio,
         password,
         confirmPassword,
+        termsAccepted: true,
         avatar: profilePreview !== DEFAULT_AVATAR_PREVIEW ? profilePreview : undefined,
         farmName: isFarmer ? farmName : undefined,
         specialization: isFarmer ? specialization : undefined,
@@ -103,11 +106,11 @@ const RegisterPage = () => {
         farmSizeUnit: isFarmer ? farmSizeUnit : undefined,
       });
       navigate(
-        newUser.role === USER_ROLES.FARMER ? ROUTES.MANAGE_LISTINGS : ROUTES.HOME,
+        data.user.role === USER_ROLES.FARMER ? ROUTES.MANAGE_LISTINGS : ROUTES.HOME,
         { replace: true },
       );
-    } catch (err) {
-      setFormError(err.message);
+    } catch (error) {
+      setFormError(getAuthErrorMessage(error, 'Registration failed. Please try again.'));
     }
   };
 
@@ -478,10 +481,10 @@ const RegisterPage = () => {
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={registerMutation.isPending}
                 className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none text-white py-3 px-4 rounded-lg font-medium transition duration-200 transform hover:scale-105"
               >
-                {isLoading ? 'Creating account...' : 'Create Account'}
+                {registerMutation.isPending ? 'Creating account...' : 'Create Account'}
               </button>
 
               <div className="relative">
