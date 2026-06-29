@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { Container } from '@components/common';
 import { ROUTES } from '@constants';
 import { STORAGE_KEYS } from '@constants/storage';
 
@@ -41,7 +42,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Container>
         <div className="flex justify-between items-center h-16">
           <Link to={ROUTES.HOME} className="flex items-center space-x-3" onClick={closeMobileMenu}>
             <div className="bg-primary-500 p-2 rounded-lg">
@@ -164,7 +165,7 @@ const Navbar = () => {
             </div>
           </div>
         )}
-      </div>
+      </Container>
     </nav>
   );
 };

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Container } from '@components/common';
 import { ROUTES } from '@constants';
 import { FEATURED_PRODUCTS } from '@data/products';
 import { ProductCard } from '@components/products';
@@ -6,7 +7,7 @@ import { ProductCard } from '@components/products';
 const FeaturedProducts = () => {
   return (
     <section className="py-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Container>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-12">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -27,7 +28,7 @@ const FeaturedProducts = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 };

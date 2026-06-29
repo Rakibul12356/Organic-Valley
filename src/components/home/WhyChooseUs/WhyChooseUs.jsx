@@ -1,9 +1,10 @@
+import { Container } from '@components/common';
 import { WHY_CHOOSE_US } from '../data';
 
 const WhyChooseUs = () => {
   return (
     <section className="py-16 bg-white dark:bg-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Container>
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Why Choose Organic Valley?
@@ -29,7 +30,7 @@ const WhyChooseUs = () => {
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 };
