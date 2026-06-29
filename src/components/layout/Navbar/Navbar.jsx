@@ -39,21 +39,33 @@ const Navbar = () => {
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+  const toggleMobileMenu = () => setIsMobileMenuOpen((open) => !open);
+
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to={ROUTES.HOME} className="flex items-center space-x-3" onClick={closeMobileMenu}>
-            <div className="bg-primary-500 p-2 rounded-lg">
-              <i className="fas fa-seedling text-white text-xl" aria-hidden="true" />
+        <div className="flex items-center justify-between gap-3 min-h-16 py-2 lg:py-0 lg:h-16">
+          {/* Logo */}
+          <Link
+            to={ROUTES.HOME}
+            className="flex items-center gap-2 sm:gap-3 min-w-0 shrink"
+            onClick={closeMobileMenu}
+          >
+            <div className="bg-primary-500 p-1.5 sm:p-2 rounded-lg shrink-0">
+              <i className="fas fa-seedling text-white text-lg sm:text-xl" aria-hidden="true" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Organic Valley</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Fresh Organic Products</p>
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white truncate">
+                Organic Valley
+              </h1>
+              <p className="hidden sm:block text-xs text-gray-500 dark:text-gray-400 truncate">
+                Fresh Organic Products
+              </p>
             </div>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Desktop navigation */}
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8 shrink-0">
             {NAV_LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} className={navLinkClass}>
                 {link.label}
@@ -61,8 +73,10 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="flex items-center space-x-4">
-            <div className="hidden sm:block relative">
+          {/* Actions */}
+          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
+            {/* Desktop search */}
+            <div className="hidden lg:block relative">
               <label htmlFor="navbar-search" className="sr-only">
                 Search products
               </label>
@@ -72,9 +86,12 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search products..."
-                className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="w-44 xl:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               />
-              <i className="fas fa-search absolute left-3 top-3 text-gray-400" aria-hidden="true" />
+              <i
+                className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                aria-hidden="true"
+              />
             </div>
 
             <Link
@@ -82,28 +99,27 @@ const Navbar = () => {
               className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
               aria-label={`Cart with ${cartCount} items`}
             >
-              <i className="fas fa-shopping-cart text-xl" aria-hidden="true" />
+              <i className="fas fa-shopping-cart text-lg sm:text-xl" aria-hidden="true" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] sm:text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </Link>
 
-            <div className="relative">
-              <Link
-                to={ROUTES.PROFILE}
-                className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-                  alt="User profile"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="hidden sm:block">John Doe</span>
-                <i className="fas fa-chevron-down text-sm" aria-hidden="true" />
-              </Link>
-            </div>
+            <Link
+              to={ROUTES.PROFILE}
+              className="hidden sm:flex items-center gap-2 p-1 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+              aria-label="User profile"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+                alt=""
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full"
+              />
+              <span className="hidden xl:inline text-sm">John Doe</span>
+              <i className="fas fa-chevron-down text-xs hidden xl:inline" aria-hidden="true" />
+            </Link>
 
             <button
               type="button"
@@ -111,38 +127,43 @@ const Navbar = () => {
               className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
               aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`} aria-hidden="true" />
+              <i className={`fas text-lg sm:text-xl ${isDarkMode ? 'fa-sun' : 'fa-moon'}`} aria-hidden="true" />
             </button>
 
             <button
               type="button"
-              onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300"
+              onClick={toggleMobileMenu}
+              className="lg:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
               aria-label="Toggle mobile menu"
               aria-expanded={isMobileMenuOpen}
             >
               <i
-                className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}
+                className={`fas text-lg sm:text-xl ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}
                 aria-hidden="true"
               />
             </button>
           </div>
         </div>
 
+        {/* Mobile & tablet menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 space-y-3">
-            {NAV_LINKS.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) => `block px-2 py-1 ${navLinkClass({ isActive })}`}
-                onClick={closeMobileMenu}
-              >
-                {link.label}
-              </NavLink>
-            ))}
+          <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4">
+            <div className="flex flex-col gap-1">
+              {NAV_LINKS.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `block px-3 py-2.5 rounded-lg text-base ${navLinkClass({ isActive })}`
+                  }
+                  onClick={closeMobileMenu}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
 
-            <div className="relative sm:hidden pt-2">
+            <div className="relative mt-4 px-1">
               <label htmlFor="navbar-search-mobile" className="sr-only">
                 Search products
               </label>
@@ -152,10 +173,26 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search products..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               />
-              <i className="fas fa-search absolute left-3 top-3 text-gray-400" aria-hidden="true" />
+              <i
+                className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                aria-hidden="true"
+              />
             </div>
+
+            <Link
+              to={ROUTES.PROFILE}
+              className="sm:hidden flex items-center gap-3 mt-4 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              onClick={closeMobileMenu}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+                alt=""
+                className="w-8 h-8 rounded-full"
+              />
+              <span className="font-medium">John Doe</span>
+            </Link>
           </div>
         )}
       </div>
